@@ -5,6 +5,9 @@
   "main": "index.js",
   "author": "kelvinsun<kelvinsun@tencent.com>",
   "license": "MIT",
+  "bin": {
+    "badminton-court": "bin/index.js"
+  },
   "devDependencies": {
     "husky": "^2.3.0",
     "prettier": "^1.17.1",
@@ -13,5 +16,8 @@
     "tslint": "^5.16.0",
     "tslint-config-prettier": "^1.18.0",
     "typescript": "^3.4.5"
+  },
+  "dependencies": {
+    "inquirer": "^6.3.1"
   }
 }
