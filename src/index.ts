@@ -217,8 +217,17 @@ function booking(userName: string, date: string, startTime: number, endTime: num
     });
 }
 
-function cancellation(userName: string, date: string, startTime: string, endTime: string, courNo: string) {
-
+function findBookingIndex(userName: string, date: string, startTime: number, endTime: number, courtNo: string): number {
+    return booked.findIndex(booking =>
+        booking.userName === userName &&
+        booking.date === date &&
+        booking.startTime === startTime &&
+        booking.endTime === endTime &&
+        booking.courtNo === courtNo
+    );
+}
+function cancellation(index: number) {
+    booked.splice(index, 1);
 }
 
 function main(input: string) {
@@ -257,7 +266,16 @@ function main(input: string) {
         }
 
         if (isCancel) {
+            const index = findBookingIndex(userName, date, numStartTime, numEndTime, courtNo);
 
+            if (0 > index) {
+                console.error('没有这个订单');
+                return ;
+            }
+
+            cancellation(index);
+
+            console.log('取消成功', input);
         } else {
             const noIntersection = judgeIsFree(sameDaySameCourt, numStartTime, numEndTime);
 
@@ -267,6 +285,8 @@ function main(input: string) {
             }
 
             booking(userName, date, numStartTime, numEndTime, courtNo);
+
+            console.log('预订成功', input);
         }
     }
 
@@ -277,6 +297,6 @@ function main(input: string) {
         main(testCase[i]);
     }
 
-    console.log('bookings', booked);
+    // console.log('bookings', booked);
 })();
 
