@@ -249,13 +249,6 @@ function main(input: string) {
         const numStartTime: number = dateStrToNum(startTime);
         const numEndTime: number = dateStrToNum(endTime);
 
-        const noIntersection = judgeIsFree(sameDaySameCourt, numStartTime, numEndTime);
-
-        if (!noIntersection) {
-            console.error('已被预定了');
-            return ;
-        }
-
         const inBusiness = judgeInBusiness(date, numStartTime, numEndTime);
 
         if (!inBusiness) {
@@ -263,7 +256,18 @@ function main(input: string) {
             return ;
         }
 
-        booking(userName, date, numStartTime, numEndTime, courtNo);
+        if (isCancel) {
+
+        } else {
+            const noIntersection = judgeIsFree(sameDaySameCourt, numStartTime, numEndTime);
+
+            if (!noIntersection) {
+                console.error('已被预定了');
+                return ;
+            }
+
+            booking(userName, date, numStartTime, numEndTime, courtNo);
+        }
     }
 
 }
