@@ -31,4 +31,4 @@ $ node ./index.js
 
 ## TODOs
 
-[ ] .d.ts
+- [ ] .d.ts
