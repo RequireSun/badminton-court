@@ -13,8 +13,6 @@ const regInput = /^(\w+)\s(\d{4}-\d{1,2}-\d{1,2})\s(\d{1,2}:\d{2})~(\d{1,2}:\d{2
 const regYMD = /^(\d{4})-(\d{1,2})-(\d{1,2})$/;
 const regTime = /^(\d{1,2}):(\d{2})$/;
 
-const matchResult: Array<string | number> | null = testCase[0].match(regInput);
-
 /**
  * 可以扩展下返回值, 返回具体哪一位不对
  * 复杂正则无法细到哪一项有问题, 而且也不好改
@@ -126,10 +124,105 @@ function validationTime(startTime: string, endTime: string): boolean {
         return false;
     }
 
+    // 这个时间必须要合理, 开始小于结束
     return startHour < endHour;
 }
 
-(function () {
+function validationCancel(isCancel: string): boolean {
+    return 'C' === isCancel;
+}
+
+interface IBooking {
+    userName: string;
+    /**
+     * 反正不能通宵定, 这玩意跟 ID 没什么区别
+     */
+    date: string;
+    /**
+     * 就怕以后会要求支持分钟, 所以不敢写整数
+     */
+    startTime: number;
+    endTime: number;
+    courtNo: string;
+}
+
+const booked: IBooking[] = [];
+
+/**
+ * 第一维: 日
+ * 第二维: 小时, 起点 0, 终点 24
+ */
+const priceMap: Array<Array<number>> = [
+    [NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 30, 30, 30, 50, 50, 50, 50, 50, 50, 80, 80, 60, 60, NaN, NaN],
+    [NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 30, 30, 30, 50, 50, 50, 50, 50, 50, 80, 80, 60, 60, NaN, NaN],
+    [NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 30, 30, 30, 50, 50, 50, 50, 50, 50, 80, 80, 60, 60, NaN, NaN],
+    [NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 30, 30, 30, 50, 50, 50, 50, 50, 50, 80, 80, 60, 60, NaN, NaN],
+    [NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 30, 30, 30, 50, 50, 50, 50, 50, 50, 80, 80, 60, 60, NaN, NaN],
+    [NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 40, 40, 40, 50, 50, 50, 50, 50, 50, 60, 60, 60, 60, NaN, NaN],
+];
+
+/**
+ * 一小时相当于 3600000 毫秒
+ */
+const HOUR = 1000 * 60 * 60;
+
+function dateStrToNum(date: string): number {
+    const matchResult: Array<string | number> | null = date.match(regTime);
+
+    if (!matchResult) {
+        throw Error('input schema incorrect!');
+    }
+
+    // (小时 * 60 + 分钟) * 60 * 1000 转换成毫秒
+    return (+matchResult[1] * 60 + +matchResult[2]) * 60 * 1000;
+}
+
+function judgeIsFree(booked: IBooking[], startTime: number, endTime: number): boolean {
+    for (let i = 0, l = booked.length; i < l; ++i) {
+        // 当前的时间比已预定的结束时间早, 或者结束比已预订的晚, 证明重合了
+        if (startTime < booked[i].endTime || endTime > booked[i].startTime) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+function judgeInBusiness(date: string, startTime: number, endTime: number): boolean {
+    const dayOfWeek: number = (new Date(date)).getDay();
+    const priceList: number[] = priceMap[dayOfWeek];
+
+    // TODO 外面有校验, 我就当 start end 合理
+    let hourNow = Math.floor(startTime / HOUR);
+    let hourEnd = Math.floor(endTime / HOUR);
+
+    while (hourNow < hourEnd) {
+        // 如果对应位置的数字是 NaN, 就证明不能预订
+        if (isNaN(priceList[hourNow])) {
+            return false;
+        }
+        ++hourNow;
+    }
+
+    return true;
+}
+
+function booking(userName: string, date: string, startTime: number, endTime: number, courtNo: string) {
+    booked.push({
+        userName: userName,
+        date,
+        startTime,
+        endTime,
+        courtNo,
+    });
+}
+
+function cancellation(userName: string, date: string, startTime: string, endTime: string, courNo: string) {
+
+}
+
+function main(input: string) {
+    const matchResult: Array<string | number> | null = input.match(regInput);
 
     if (matchResult) {
         const [, userName, date, startTime, endTime, courtNo, isCancel] =
@@ -145,6 +238,41 @@ function validationTime(startTime: string, endTime: string): boolean {
             console.error('时间炸了');
             return ;
         }
+
+        // 存在 cancel 标识, 且没通过校验
+        if (undefined !== isCancel && !validationCancel(isCancel)) {
+            console.error('取消标识炸了');
+            return ;
+        }
+
+        const sameDaySameCourt: IBooking[] = booked.filter(booking => booking.date === date && booking.courtNo === courtNo);
+        const numStartTime: number = dateStrToNum(startTime);
+        const numEndTime: number = dateStrToNum(endTime);
+
+        const noIntersection = judgeIsFree(sameDaySameCourt, numStartTime, numEndTime);
+
+        if (!noIntersection) {
+            console.error('已被预定了');
+            return ;
+        }
+
+        const inBusiness = judgeInBusiness(date, numStartTime, numEndTime);
+
+        if (!inBusiness) {
+            console.error('没有营业');
+            return ;
+        }
+
+        booking(userName, date, numStartTime, numEndTime, courtNo);
     }
+
+}
+
+(function () {
+    for (let i = 0, l = testCase.length; i < l; ++i) {
+        main(testCase[i]);
+    }
+
+    console.log('bookings', booked);
 })();
 
