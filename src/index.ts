@@ -10,8 +10,8 @@ const testCase = [
 // {用户 ID} {预订日期 yyyy-MM-dd} {预订时间段 HH:mm~HH:mm} {场地}
 // {用户 ID} {预订日期 yyyy-MM-dd} {预订时间段 HH:mm~HH:mm} {场地} {取消标记}
 const regInput = /^(\w+)\s(\d{4}-\d{1,2}-\d{1,2})\s(\d{1,2}:\d{2})~(\d{1,2}:\d{2})\s(\w+)(?:\s(\w))?$/;
-const regYMD = /^(\d{4})-(\d{1,2})-(\d{1,2})/;
-const regTime = /^(\d{1,2}):(\d{2})^/;
+const regYMD = /^(\d{4})-(\d{1,2})-(\d{1,2})$/;
+const regTime = /^(\d{1,2}):(\d{2})$/;
 
 const matchResult: Array<string | number> | null = testCase[0].match(regInput);
 
@@ -126,7 +126,7 @@ function validationTime(startTime: string, endTime: string): boolean {
         return false;
     }
 
-    return startHour > endHour;
+    return startHour < endHour;
 }
 
 (function () {
