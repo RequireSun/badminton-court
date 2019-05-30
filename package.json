@@ -5,6 +5,9 @@
   "main": "index.js",
   "author": "kelvinsun<kelvinsun@tencent.com>",
   "license": "MIT",
+  "scripts": {
+    "build": "tsc --project tsconfig.json"
+  },
   "bin": {
     "badminton-court": "bin/index.js"
   },
