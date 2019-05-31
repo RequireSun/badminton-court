@@ -35,6 +35,6 @@ export default function validationTime(startTime: string, endTime: string): bool
         return false;
     }
 
-    // 这个时间必须要合理, 开始小于结束
+    // 这个时间必须要合理, 开始小于结束 (同时过滤掉开始比结束晚以及时长为 0 的情况)
     return startHour < endHour;
 }

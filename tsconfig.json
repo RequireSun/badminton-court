@@ -10,7 +10,7 @@
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "baseUrl": ".",
-    "outDir": "./bin",
+    "outDir": "./lib",
     "lib": ["dom", "es5", "es2015.promise", "es2016"]
   },
   "include": [

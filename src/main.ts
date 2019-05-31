@@ -35,7 +35,7 @@ export default class Main {
     private booked: IBooking[] = [];
     private canceled: IBooking[] = [];
 
-    public input(str: string) {
+    public input(str: string): string | void {
         const matchResult: Array<string | number> | null = str.match(regInput);
 
         if (matchResult) {
@@ -50,20 +50,19 @@ export default class Main {
             ];
 
             if (!validationDate(date)) {
-                // TODO
-                console.error('日期炸了');
-                return;
+                // console.error('日期炸了');
+                return 'Error: the booking is invalid!';
             }
 
             if (!validationTime(startTime, endTime)) {
-                console.error('时间炸了');
-                return;
+                // console.error('时间炸了');
+                return 'Error: the booking is invalid!';
             }
 
             // 存在 cancel 标识, 且没通过校验
             if (undefined !== isCancel && !validationCancel(isCancel)) {
-                console.error('取消标识炸了');
-                return;
+                // console.error('取消标识炸了');
+                return 'Error: the booking is invalid!';
             }
 
             const sameDaySameCourt: IBooking[] = this.booked.filter(
@@ -75,38 +74,44 @@ export default class Main {
             const inBusiness = judgeInBusiness(date, numStartTime, numEndTime);
 
             if (!inBusiness) {
-                console.error('没有营业');
-                return;
+                // console.error('没有营业');
+                return 'Error: the booking is invalid!';
             }
 
             if (isCancel) {
                 const index = this.findBookingIndex(userName, date, numStartTime, numEndTime, courtNo);
 
                 if (0 > index) {
-                    console.error('没有这个订单');
-                    return;
+                    // console.error('没有这个订单');
+                    return 'Error: the booking being cancelled does not exist!';
                 }
 
                 this.cancellation(index);
 
-                console.log('取消成功', str);
+                // console.log('取消成功', str);
+
+                return ;
             } else {
                 const noIntersection = judgeIsFree(sameDaySameCourt, numStartTime, numEndTime);
 
                 if (!noIntersection) {
-                    console.error('已被预定了');
-                    return;
+                    // console.error('已被预定了');
+                    return 'Error: the booking conflicts with existing bookings!';
                 }
 
                 this.booking(userName, date, numStartTime, numEndTime, courtNo);
 
-                console.log('预订成功', str);
+                // console.log('预订成功', str);
+
+                return ;
             }
+        } else {
+            return 'Error: the booking is invalid!';
         }
     }
 
     public output() {
-        const summary: { [key: string]: { bookings: IBookingStatement[], price: number } } = {};
+        const summary: { [key: string]: { bookings: IBookingStatement[]; price: number } } = {};
 
         for (let i = 0, l = this.booked.length; i < l; ++i) {
             if (!summary[this.booked[i].courtNo]) {
@@ -130,7 +135,12 @@ export default class Main {
             let price = 0;
 
             for (const bookingItem of summary[courtNo].bookings) {
-                bookingItem.price = Main.calcCost(bookingItem.booking.date, bookingItem.booking.startTime, bookingItem.booking.endTime, bookingItem.booking.status);
+                bookingItem.price = Main.calcCost(
+                    bookingItem.booking.date,
+                    bookingItem.booking.startTime,
+                    bookingItem.booking.endTime,
+                    bookingItem.booking.status,
+                );
 
                 price += bookingItem.price;
             }
