@@ -1,4 +1,3 @@
-
 interface IBooking {
     userName: string;
     /**
@@ -11,4 +10,5 @@ interface IBooking {
     startTime: number;
     endTime: number;
     courtNo: string;
+    status: 'Booked' | 'Canceled';
 }

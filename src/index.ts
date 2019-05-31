@@ -16,5 +16,5 @@ const testCase = [
         main.input(testCase[i]);
     }
 
-    // console.log('bookings', booked);
+    console.log(main.output());
 })();

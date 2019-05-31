@@ -5,11 +5,13 @@ import transformerDateStrToNum from './transformer/dateStrToNum';
 import judgeInBusiness from './judgement/inBusiness';
 import judgeIsFree from './judgement/isFree';
 import { regInput } from './constant/regexp';
+import sortFnDate from './util/sortFnDate';
 
 export default class Main {
     private booked: IBooking[] = [];
+    private canceled: IBooking[] = [];
 
-    public input (str: string) {
+    public input(str: string) {
         const matchResult: Array<string | number> | null = str.match(regInput);
 
         if (matchResult) {
@@ -21,7 +23,7 @@ export default class Main {
                 string,
                 string,
                 string
-                ];
+            ];
 
             if (!validationDate(date)) {
                 // TODO
@@ -79,6 +81,32 @@ export default class Main {
         }
     }
 
+    public output() {
+        const summary: { [key: string]: IBooking[] } = {};
+
+        for (let i = 0, l = this.booked.length; i < l; ++i) {
+            if (!summary[this.booked[i].courtNo]) {
+                summary[this.booked[i].courtNo] = [];
+            }
+
+            summary[this.booked[i].courtNo].push(this.booked[i]);
+        }
+
+        for (let i = 0, l = this.canceled.length; i < l; ++i) {
+            if (!summary[this.canceled[i].courtNo]) {
+                summary[this.canceled[i].courtNo] = [];
+            }
+
+            summary[this.canceled[i].courtNo].push(this.canceled[i]);
+        }
+
+        for (const courtNo of Object.keys(summary)) {
+            summary[courtNo].sort(sortFnDate);
+        }
+
+        return summary;
+    }
+
     private booking(userName: string, date: string, startTime: number, endTime: number, courtNo: string) {
         this.booked.push({
             userName,
@@ -86,10 +114,17 @@ export default class Main {
             startTime,
             endTime,
             courtNo,
+            status: 'Booked',
         });
     }
 
-    private findBookingIndex(userName: string, date: string, startTime: number, endTime: number, courtNo: string): number {
+    private findBookingIndex(
+        userName: string,
+        date: string,
+        startTime: number,
+        endTime: number,
+        courtNo: string,
+    ): number {
         return this.booked.findIndex(
             (bookingItem: IBooking): boolean =>
                 bookingItem.userName === userName &&
@@ -101,6 +136,12 @@ export default class Main {
     }
 
     private cancellation(index: number) {
-        this.booked.splice(index, 1);
+        const bookingItem = this.booked.splice(index, 1);
+
+        for (let i = 0, l = bookingItem.length; i < l; ++i) {
+            bookingItem[i].status = 'Canceled';
+        }
+
+        this.canceled.push(...bookingItem);
     }
 }
