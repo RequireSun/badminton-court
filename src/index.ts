@@ -19,7 +19,7 @@ const regTime = /^(\d{1,2}):(\d{2})$/;
  * @param {string} strDate
  * @returns {boolean}
  */
-function validationDate (strDate: string): boolean {
+function validationDate(strDate: string): boolean {
     const matchResult: Array<string | number> | null = strDate.match(regYMD);
 
     if (!matchResult) {
@@ -105,7 +105,9 @@ function validationTime(startTime: string, endTime: string): boolean {
         return false;
     }
 
+    // tslint:disable-next-line prefer-const
     let [, startHour, startMinute] = matchResultStartTime;
+    // tslint:disable-next-line prefer-const
     let [, endHour, endMinute] = matchResultEndTime;
 
     // 时间必须是整点
@@ -152,7 +154,7 @@ const booked: IBooking[] = [];
  * 第一维: 日
  * 第二维: 小时, 起点 0, 终点 24
  */
-const priceMap: Array<Array<number>> = [
+const priceMap: number[][] = [
     [NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 30, 30, 30, 50, 50, 50, 50, 50, 50, 80, 80, 60, 60, NaN, NaN],
     [NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 30, 30, 30, 50, 50, 50, 50, 50, 50, 80, 80, 60, 60, NaN, NaN],
     [NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 30, 30, 30, 50, 50, 50, 50, 50, 50, 80, 80, 60, 60, NaN, NaN],
@@ -177,10 +179,10 @@ function dateStrToNum(date: string): number {
     return (+matchResult[1] * 60 + +matchResult[2]) * 60 * 1000;
 }
 
-function judgeIsFree(booked: IBooking[], startTime: number, endTime: number): boolean {
-    for (let i = 0, l = booked.length; i < l; ++i) {
+function judgeIsFree(sameBooked: IBooking[], startTime: number, endTime: number): boolean {
+    for (let i = 0, l = sameBooked.length; i < l; ++i) {
         // 当前的时间比已预定的结束时间早, 或者结束比已预订的晚, 证明重合了
-        if (startTime < booked[i].endTime || endTime > booked[i].startTime) {
+        if (startTime < sameBooked[i].endTime || endTime > sameBooked[i].startTime) {
             return false;
         }
     }
@@ -189,12 +191,12 @@ function judgeIsFree(booked: IBooking[], startTime: number, endTime: number): bo
 }
 
 function judgeInBusiness(date: string, startTime: number, endTime: number): boolean {
-    const dayOfWeek: number = (new Date(date)).getDay();
+    const dayOfWeek: number = new Date(date).getDay();
     const priceList: number[] = priceMap[dayOfWeek];
 
     // TODO 外面有校验, 我就当 start end 合理
     let hourNow = Math.floor(startTime / HOUR);
-    let hourEnd = Math.floor(endTime / HOUR);
+    const hourEnd = Math.floor(endTime / HOUR);
 
     while (hourNow < hourEnd) {
         // 如果对应位置的数字是 NaN, 就证明不能预订
@@ -209,7 +211,7 @@ function judgeInBusiness(date: string, startTime: number, endTime: number): bool
 
 function booking(userName: string, date: string, startTime: number, endTime: number, courtNo: string) {
     booked.push({
-        userName: userName,
+        userName,
         date,
         startTime,
         endTime,
@@ -218,12 +220,13 @@ function booking(userName: string, date: string, startTime: number, endTime: num
 }
 
 function findBookingIndex(userName: string, date: string, startTime: number, endTime: number, courtNo: string): number {
-    return booked.findIndex(booking =>
-        booking.userName === userName &&
-        booking.date === date &&
-        booking.startTime === startTime &&
-        booking.endTime === endTime &&
-        booking.courtNo === courtNo
+    return booked.findIndex(
+        (bookingItem: IBooking): boolean =>
+            bookingItem.userName === userName &&
+            bookingItem.date === date &&
+            bookingItem.startTime === startTime &&
+            bookingItem.endTime === endTime &&
+            bookingItem.courtNo === courtNo,
     );
 }
 function cancellation(index: number) {
@@ -234,27 +237,36 @@ function main(input: string) {
     const matchResult: Array<string | number> | null = input.match(regInput);
 
     if (matchResult) {
-        const [, userName, date, startTime, endTime, courtNo, isCancel] =
-            matchResult as [any, string, string, string, string, string, string];
+        const [, userName, date, startTime, endTime, courtNo, isCancel] = matchResult as [
+            any,
+            string,
+            string,
+            string,
+            string,
+            string,
+            string
+        ];
 
         if (!validationDate(date)) {
             // TODO
             console.error('日期炸了');
-            return ;
+            return;
         }
 
         if (!validationTime(startTime, endTime)) {
             console.error('时间炸了');
-            return ;
+            return;
         }
 
         // 存在 cancel 标识, 且没通过校验
         if (undefined !== isCancel && !validationCancel(isCancel)) {
             console.error('取消标识炸了');
-            return ;
+            return;
         }
 
-        const sameDaySameCourt: IBooking[] = booked.filter(booking => booking.date === date && booking.courtNo === courtNo);
+        const sameDaySameCourt: IBooking[] = booked.filter(
+            bookingItem => bookingItem.date === date && bookingItem.courtNo === courtNo,
+        );
         const numStartTime: number = dateStrToNum(startTime);
         const numEndTime: number = dateStrToNum(endTime);
 
@@ -262,7 +274,7 @@ function main(input: string) {
 
         if (!inBusiness) {
             console.error('没有营业');
-            return ;
+            return;
         }
 
         if (isCancel) {
@@ -270,7 +282,7 @@ function main(input: string) {
 
             if (0 > index) {
                 console.error('没有这个订单');
-                return ;
+                return;
             }
 
             cancellation(index);
@@ -281,7 +293,7 @@ function main(input: string) {
 
             if (!noIntersection) {
                 console.error('已被预定了');
-                return ;
+                return;
             }
 
             booking(userName, date, numStartTime, numEndTime, courtNo);
@@ -289,14 +301,12 @@ function main(input: string) {
             console.log('预订成功', input);
         }
     }
-
 }
 
-(function () {
+(() => {
     for (let i = 0, l = testCase.length; i < l; ++i) {
         main(testCase[i]);
     }
 
     // console.log('bookings', booked);
 })();
-
