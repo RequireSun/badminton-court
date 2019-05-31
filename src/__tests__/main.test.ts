@@ -162,26 +162,81 @@ describe('edge case of date', () => {
 
         expect(inNout(testCase)).toMatchObject({
             A: {
-                bookings: [{
-                    booking: {
-                        userName: 'U002',
-                        date: '2000-02-29',
-                        startTime: 68400000,
-                        endTime: 79200000,
-                        courtNo: 'A',
-                        status: 'Booked'
-                    }, price: 200
-                }, {
-                    booking: {
-                        userName: 'U002',
-                        date: '2016-02-29',
-                        startTime: 68400000,
-                        endTime: 79200000,
-                        courtNo: 'A',
-                        status: 'Booked'
-                    }, price: 200
-                }], price: 400
-            }
+                bookings: [
+                    {
+                        booking: {
+                            userName: 'U002',
+                            date: '2000-02-29',
+                            startTime: 68400000,
+                            endTime: 79200000,
+                            courtNo: 'A',
+                            status: 'Booked',
+                        },
+                        price: 200,
+                    },
+                    {
+                        booking: {
+                            userName: 'U002',
+                            date: '2016-02-29',
+                            startTime: 68400000,
+                            endTime: 79200000,
+                            courtNo: 'A',
+                            status: 'Booked',
+                        },
+                        price: 200,
+                    },
+                ],
+                price: 400,
+            },
         });
+    });
+});
+
+describe('patch cases', () => {
+    test('isFree patch', () => {
+        const testCase = [
+            'U003 2017-08-01 18:00~20:00 A',
+            'U004 2017-08-01 17:00~19:00 A',
+            'U004 2017-08-01 21:00~22:00 A',
+        ];
+
+        expect(inNout(testCase)).toMatchObject({
+            A: {
+                bookings: [
+                    {
+                        booking: {
+                            userName: 'U003',
+                            date: '2017-08-01',
+                            startTime: 64800000,
+                            endTime: 72000000,
+                            courtNo: 'A',
+                            status: 'Booked',
+                        },
+                        price: 160,
+                    },
+                    {
+                        booking: {
+                            courtNo: 'A',
+                            date: '2017-08-01',
+                            endTime: 79200000,
+                            startTime: 75600000,
+                            status: 'Booked',
+                            userName: 'U004',
+                        },
+                        price: 60,
+                    },
+
+                ],
+                price: 220,
+            },
+        });
+    });
+
+    test('cancel symbol patch', () => {
+        const testCase = [
+            'U003 2017-08-01 18:00~20:00 A 6',
+        ];
+
+        expect(inNout(testCase)).toMatchObject({});
     });
 });

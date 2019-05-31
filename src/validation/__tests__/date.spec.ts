@@ -27,7 +27,6 @@ describe('test case for validation/date', () => {
         expect(date('2019-12-31')).toEqual(true);
         expect(date('2019-12-32')).toEqual(false);
 
-
         expect(date('1900-02-29')).toEqual(false);
         expect(date('1900-02-00')).toEqual(false);
         expect(date('2001-13-01')).toEqual(false);

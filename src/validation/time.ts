@@ -2,6 +2,7 @@ import { regTime } from '../constant/regexp';
 
 /**
  * 只判断时间是否合理, 不管是否营业, 是否营业在算钱的时候判断
+ * 因为现在只有整点, 所以也不需要判断 24:xx 为错的情况
  * @param {string} startTime
  * @param {string} endTime
  * @returns {boolean}
