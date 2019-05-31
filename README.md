@@ -21,7 +21,7 @@ $ yarn build
 $ yarn dev
 ```
 
-运行
+运行 (请先执行 `build`)
 
 ```shell
 $ node ./bin/index.js
@@ -35,6 +35,6 @@ $ yarn test
 
 ## TODOs
 
-- [ ] 输出 .d.ts
+- [x] 输出 .d.ts
 
-- [ ] 单元测试
+- [x] 单元测试
