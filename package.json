@@ -12,6 +12,7 @@
     "start": "npm run dev",
     "dev": "tsc --project tsconfig.json --watch",
     "build": "tsc --project tsconfig.json",
+    "test": "jest --config jestconfig.json",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
     "lint": "tslint -p tsconfig.json",
     "commit": "git-cz"
@@ -20,8 +21,10 @@
   "devDependencies": {
     "@commitlint/cli": "^7.6.1",
     "@commitlint/config-conventional": "^7.6.0",
+    "@types/jest": "^24.0.13",
     "commitizen": "^3.1.1",
     "husky": "^2.3.0",
+    "jest": "^24.8.0",
     "prettier": "^1.17.1",
     "prettier-tslint": "^0.4.2",
     "ts-jest": "^24.0.2",
