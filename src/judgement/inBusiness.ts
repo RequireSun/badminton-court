@@ -1,9 +1,5 @@
 import priceMap from '../constant/priceMap';
-
-/**
- * 一小时相当于 3600000 毫秒
- */
-const HOUR = 1000 * 60 * 60;
+import { HOUR } from '../time';
 
 export default function judgeInBusiness(date: string, startTime: number, endTime: number): boolean {
     const dayOfWeek: number = new Date(date).getDay();

@@ -5,9 +5,33 @@ import transformerDateStrToNum from './transformer/dateStrToNum';
 import judgeInBusiness from './judgement/inBusiness';
 import judgeIsFree from './judgement/isFree';
 import { regInput } from './constant/regexp';
+import { HOUR } from './time';
 import sortFnDate from './util/sortFnDate';
+import priceMap from './constant/priceMap';
 
 export default class Main {
+    private static calcCost(date: string, startTime: number, endTime: number, status: 'Booked' | 'Canceled'): number {
+        let summary: number = 0;
+
+        const dayOfWeek: number = new Date(date).getDay();
+        const priceList: number[] = priceMap[dayOfWeek];
+
+        // TODO 外面有校验, 我就当 start end 合理
+        let hourNow = Math.floor(startTime / HOUR);
+        const hourEnd = Math.floor(endTime / HOUR);
+
+        while (hourNow < hourEnd) {
+            // 如果对应位置的数字是 NaN, 就证明不能预订
+            if (isNaN(priceList[hourNow])) {
+                throw new Error('not open in this time');
+            }
+            summary += priceList[hourNow];
+            ++hourNow;
+        }
+
+        return 'Canceled' === status ? summary / 2 : summary;
+    }
+
     private booked: IBooking[] = [];
     private canceled: IBooking[] = [];
 
@@ -82,26 +106,36 @@ export default class Main {
     }
 
     public output() {
-        const summary: { [key: string]: IBooking[] } = {};
+        const summary: { [key: string]: { bookings: IBookingStatement[], price: number } } = {};
 
         for (let i = 0, l = this.booked.length; i < l; ++i) {
             if (!summary[this.booked[i].courtNo]) {
-                summary[this.booked[i].courtNo] = [];
+                summary[this.booked[i].courtNo] = { bookings: [], price: 0 };
             }
 
-            summary[this.booked[i].courtNo].push(this.booked[i]);
+            summary[this.booked[i].courtNo].bookings.push({ booking: this.booked[i], price: 0 });
         }
 
         for (let i = 0, l = this.canceled.length; i < l; ++i) {
             if (!summary[this.canceled[i].courtNo]) {
-                summary[this.canceled[i].courtNo] = [];
+                summary[this.canceled[i].courtNo] = { bookings: [], price: 0 };
             }
 
-            summary[this.canceled[i].courtNo].push(this.canceled[i]);
+            summary[this.canceled[i].courtNo].bookings.push({ booking: this.canceled[i], price: 0 });
         }
 
         for (const courtNo of Object.keys(summary)) {
-            summary[courtNo].sort(sortFnDate);
+            summary[courtNo].bookings.sort(sortFnDate);
+
+            let price = 0;
+
+            for (const bookingItem of summary[courtNo].bookings) {
+                bookingItem.price = Main.calcCost(bookingItem.booking.date, bookingItem.booking.startTime, bookingItem.booking.endTime, bookingItem.booking.status);
+
+                price += bookingItem.price;
+            }
+
+            summary[courtNo].price = price;
         }
 
         return summary;

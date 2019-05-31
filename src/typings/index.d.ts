@@ -12,3 +12,8 @@ interface IBooking {
     courtNo: string;
     status: 'Booked' | 'Canceled';
 }
+
+interface IBookingStatement {
+    booking: IBooking;
+    price: number;
+}
