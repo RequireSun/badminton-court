@@ -225,7 +225,6 @@ describe('patch cases', () => {
                         },
                         price: 60,
                     },
-
                 ],
                 price: 220,
             },
@@ -233,9 +232,7 @@ describe('patch cases', () => {
     });
 
     test('cancel symbol patch', () => {
-        const testCase = [
-            'U003 2017-08-01 18:00~20:00 A 6',
-        ];
+        const testCase = ['U003 2017-08-01 18:00~20:00 A 6'];
 
         expect(inNout(testCase)).toMatchObject({});
     });
