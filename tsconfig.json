@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "module": "esnext",
+    "target": "es5",
+    "module": "commonjs",
     "strict": true,
     "importHelpers": true,
     "moduleResolution": "node",
@@ -10,7 +10,8 @@
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "baseUrl": ".",
-    "outDir": "./bin"
+    "outDir": "./bin",
+    "lib": ["dom", "es5", "es2015.promise", "es2016"]
   },
   "include": [
     "src/**/*.ts"
