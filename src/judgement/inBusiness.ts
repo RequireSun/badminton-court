@@ -1,5 +1,5 @@
 import priceMap from '../constant/priceMap';
-import { HOUR } from '../time';
+import { HOUR } from '../constant/time';
 
 export default function judgeInBusiness(date: string, startTime: number, endTime: number): boolean {
     const dayOfWeek: number = new Date(date).getDay();

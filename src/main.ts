@@ -5,7 +5,7 @@ import transformerDateStrToNum from './transformer/dateStrToNum';
 import judgeInBusiness from './judgement/inBusiness';
 import judgeIsFree from './judgement/isFree';
 import { regInput } from './constant/regexp';
-import { HOUR } from './time';
+import { HOUR } from './constant/time';
 import sortFnDate from './util/sortFnDate';
 import priceMap from './constant/priceMap';
 
@@ -90,7 +90,7 @@ export default class Main {
 
                 // console.log('取消成功', str);
 
-                return ;
+                return;
             } else {
                 const noIntersection = judgeIsFree(sameDaySameCourt, numStartTime, numEndTime);
 
@@ -103,7 +103,7 @@ export default class Main {
 
                 // console.log('预订成功', str);
 
-                return ;
+                return;
             }
         } else {
             return 'Error: the booking is invalid!';
@@ -111,7 +111,7 @@ export default class Main {
     }
 
     public output() {
-        const summary: { [key: string]: { bookings: IBookingStatement[]; price: number } } = {};
+        const summary: { [courtNo: string]: { bookings: IBookingStatement[]; price: number } } = {};
 
         for (let i = 0, l = this.booked.length; i < l; ++i) {
             if (!summary[this.booked[i].courtNo]) {
