@@ -12,7 +12,7 @@
     "start": "npm run dev",
     "dev": "tsc --project tsconfig.json --watch",
     "build": "tsc --project tsconfig.json",
-    "test": "jest --config jestconfig.json",
+    "test": "jest --coverage --config jestconfig.json",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
     "lint": "tslint -p tsconfig.json",
     "commit": "git-cz"
