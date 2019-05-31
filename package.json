@@ -13,6 +13,7 @@
     "lint": "tslint -p tsconfig.json",
     "commit": "git-cz"
   },
+  "typings": "typings",
   "bin": {
     "badminton-court": "bin/index.js"
   },
