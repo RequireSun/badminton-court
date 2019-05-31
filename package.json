@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Demo for PCG coding association.",
   "main": "index.js",
+  "bin": {
+    "badminton-court": "bin/index.js"
+  },
   "author": "kelvinsun<kelvinsun@tencent.com>",
   "license": "MIT",
   "scripts": {
@@ -14,9 +17,6 @@
     "commit": "git-cz"
   },
   "typings": "typings",
-  "bin": {
-    "badminton-court": "bin/index.js"
-  },
   "devDependencies": {
     "@commitlint/cli": "^7.6.1",
     "@commitlint/config-conventional": "^7.6.0",

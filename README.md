@@ -1,7 +1,5 @@
-
-## Features
-
-我兼容了日期和时间前面没有 0 的情况
+羽毛球试题
+---
 
 ## How to use
 
@@ -26,9 +24,17 @@ $ yarn dev
 运行
 
 ```shell
-$ node ./index.js
+$ node ./bin/index.js
+```
+
+运行测试用例
+
+```shell
+$ yarn test
 ```
 
 ## TODOs
 
-- [ ] .d.ts
+- [ ] 输出 .d.ts
+
+- [ ] 单元测试
