@@ -1,16 +1,16 @@
 import Main from '../main';
 
+export const inNout = (testCase: string[]) => {
+    const main = new Main();
+
+    for (let i = 0, l = testCase.length; i < l; ++i) {
+        main.input(testCase[i]);
+    }
+
+    return main.output();
+};
+
 describe('official cases', () => {
-    const inNout = (testCase: string[]) => {
-        const main = new Main();
-
-        for (let i = 0, l = testCase.length; i < l; ++i) {
-            main.input(testCase[i]);
-        }
-
-        return main.output();
-    };
-
     test('case 1', () => {
         const testCase = [
             'abcdefghijklmnopqrst1234567890',
@@ -23,53 +23,69 @@ describe('official cases', () => {
 
         expect(inNout(testCase)).toMatchObject({
             A: {
-                bookings: [{
-                    booking: {
-                        userName: 'U002',
-                        date: '2017-08-01',
-                        startTime: 68400000,
-                        endTime: 79200000,
-                        courtNo: 'A',
-                        status: 'Booked'
-                    }, price: 200
-                }], price: 200
+                bookings: [
+                    {
+                        booking: {
+                            userName: 'U002',
+                            date: '2017-08-01',
+                            startTime: 68400000,
+                            endTime: 79200000,
+                            courtNo: 'A',
+                            status: 'Booked',
+                        },
+                        price: 200,
+                    },
+                ],
+                price: 200,
             },
             B: {
-                bookings: [{
-                    booking: {
-                        userName: 'U003',
-                        date: '2017-08-02',
-                        startTime: 46800000,
-                        endTime: 61200000,
-                        courtNo: 'B',
-                        status: 'Booked'
-                    }, price: 200
-                }], price: 200
+                bookings: [
+                    {
+                        booking: {
+                            userName: 'U003',
+                            date: '2017-08-02',
+                            startTime: 46800000,
+                            endTime: 61200000,
+                            courtNo: 'B',
+                            status: 'Booked',
+                        },
+                        price: 200,
+                    },
+                ],
+                price: 200,
             },
             C: {
-                bookings: [{
-                    booking: {
-                        userName: 'U004',
-                        date: '2017-08-03',
-                        startTime: 54000000,
-                        endTime: 57600000,
-                        courtNo: 'C',
-                        status: 'Booked'
-                    }, price: 50
-                }], price: 50
+                bookings: [
+                    {
+                        booking: {
+                            userName: 'U004',
+                            date: '2017-08-03',
+                            startTime: 54000000,
+                            endTime: 57600000,
+                            courtNo: 'C',
+                            status: 'Booked',
+                        },
+                        price: 50,
+                    },
+                ],
+                price: 50,
             },
             D: {
-                bookings: [{
-                    booking: {
-                        userName: 'U005',
-                        date: '2017-08-05',
-                        startTime: 32400000,
-                        endTime: 39600000,
-                        courtNo: 'D',
-                        status: 'Booked'
-                    }, price: 80
-                }], price: 80
-            }
+                bookings: [
+                    {
+                        booking: {
+                            userName: 'U005',
+                            date: '2017-08-05',
+                            startTime: 32400000,
+                            endTime: 39600000,
+                            courtNo: 'D',
+                            status: 'Booked',
+                        },
+                        price: 80,
+                    },
+                ],
+                price: 80,
+            },
         });
     });
 
@@ -131,14 +147,41 @@ describe('official cases', () => {
     });
 });
 
-// test('edge case of date', () => {
-//     const testCase = [
-//         'U002 2017-08-01 19:00~22:00 A',
-//         'U003 2017-08-01 18:00~20:00 A',
-//         'U002 2017-08-01 19:00~22:00 A C',
-//         'U002 2017-08-01 19:00~22:00 A C',
-//         'U003 2017-08-01 18:00~20:00 A',
-//         'U003 2017-08-02 13:00~17:00 B',
-//     ];
-//
-// });
+describe('edge case of date', () => {
+    test('case 1', () => {
+        const testCase = [
+            'U002 2000-02-29 19:00~22:00 A',
+            'U002 2016-02-29 19:00~22:00 A',
+            'U003 2015-02-29 18:00~20:00 A',
+            'U002 2017-08-01 19:00~19:00 A',
+            'U002 2017-08-01 23:00~24:00 A',
+            'U003 2017-08-01 03:00~05:00 A',
+            'U003 2017-08-02 20:00~17:00 B',
+            'U003 2017-08-02 30:00~40:00 B',
+        ];
+
+        expect(inNout(testCase)).toMatchObject({
+            A: {
+                bookings: [{
+                    booking: {
+                        userName: 'U002',
+                        date: '2000-02-29',
+                        startTime: 68400000,
+                        endTime: 79200000,
+                        courtNo: 'A',
+                        status: 'Booked'
+                    }, price: 200
+                }, {
+                    booking: {
+                        userName: 'U002',
+                        date: '2016-02-29',
+                        startTime: 68400000,
+                        endTime: 79200000,
+                        courtNo: 'A',
+                        status: 'Booked'
+                    }, price: 200
+                }], price: 400
+            }
+        });
+    });
+});
